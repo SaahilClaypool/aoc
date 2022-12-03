@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Solutions/Day01.fs" />
+    <Compile Include="Solutions/Day02.fs" />
+    <Compile Include="Solutions/Day03.fs" />
+    <Compile Include="Solutions/Day04.fs" />
+    <Compile Include="Solutions/Day05.fs" />
+    <Compile Include="Solutions/Day06.fs" />
+    <Compile Include="Solutions/Day09.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Aoc.Runner\Aoc.Runner.csproj" />
+  </ItemGroup>
+
+</Project>
