@@ -1,0 +1,389 @@
+#########
+#G......#
+#.E.#...#
+#..##..G#
+#...##..#
+#...#...#
+#.G...G.#
+#.....G.#
+#########
+
+Unit 0 G health 197
+Unit 1 E health 197
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+0
+#########
+#.G.....#
+#.E.#..G#
+#..##...#
+#...##..#
+#.G.#...#
+#....G..#
+#....G..#
+#########
+
+---------------------
+Unit 0 G health 194
+Unit 1 E health 194
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+1
+#########
+#.G....G#
+#.E.#...#
+#..##...#
+#.G.##..#
+#...#...#
+#...G...#
+#...G...#
+#########
+
+---------------------
+Unit 0 G health 191
+Unit 1 E health 188
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+2
+#########
+#.G...G.#
+#.E.#...#
+#.G##...#
+#...##..#
+#...#...#
+#..G....#
+#..G....#
+#########
+
+---------------------
+Unit 0 G health 188
+Unit 1 E health 182
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+3
+#########
+#.G..G..#
+#.E.#...#
+#.G##...#
+#...##..#
+#..G#...#
+#..G....#
+#.......#
+#########
+
+---------------------
+Unit 0 G health 185
+Unit 1 E health 176
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+4
+#########
+#.G.G...#
+#.E.#...#
+#.G##...#
+#..G##..#
+#..G#...#
+#.......#
+#.......#
+#########
+
+---------------------
+Unit 0 G health 182
+Unit 1 E health 170
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+5
+#########
+#.GG....#
+#.E.#...#
+#.G##...#
+#.G.##..#
+#.G.#...#
+#.......#
+#.......#
+#########
+
+---------------------
+Unit 0 G health 179
+Unit 1 E health 161
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+6
+#########
+#.G.....#
+#.EG#...#
+#.G##...#
+#G..##..#
+#.G.#...#
+#.......#
+#.......#
+#########
+
+---------------------
+Unit 0 G health 176
+Unit 1 E health 152
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+7
+#########
+#.G.....#
+#.EG#...#
+#GG##...#
+#...##..#
+#.G.#...#
+#.......#
+#.......#
+#########
+
+---------------------
+Unit 0 G health 173
+Unit 1 E health 140
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+8
+#########
+#.G.....#
+#GEG#...#
+#.G##...#
+#...##..#
+#.G.#...#
+#.......#
+#.......#
+#########
+
+---------------------
+Unit 0 G health 170
+Unit 1 E health 128
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+9
+#########
+#.G.....#
+#GEG#...#
+#.G##...#
+#...##..#
+#.G.#...#
+#.......#
+#.......#
+#########
+
+---------------------
+Unit 0 G health 167
+Unit 1 E health 116
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+10
+#########
+#.G.....#
+#GEG#...#
+#.G##...#
+#...##..#
+#.G.#...#
+#.......#
+#.......#
+#########
+
+---------------------
+Unit 0 G health 164
+Unit 1 E health 104
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+11
+#########
+#.G.....#
+#GEG#...#
+#.G##...#
+#...##..#
+#.G.#...#
+#.......#
+#.......#
+#########
+
+---------------------
+Unit 0 G health 161
+Unit 1 E health 92
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+12
+#########
+#.G.....#
+#GEG#...#
+#.G##...#
+#...##..#
+#.G.#...#
+#.......#
+#.......#
+#########
+
+---------------------
+Unit 0 G health 158
+Unit 1 E health 80
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+13
+#########
+#.G.....#
+#GEG#...#
+#.G##...#
+#...##..#
+#.G.#...#
+#.......#
+#.......#
+#########
+
+---------------------
+Unit 0 G health 155
+Unit 1 E health 68
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+14
+#########
+#.G.....#
+#GEG#...#
+#.G##...#
+#...##..#
+#.G.#...#
+#.......#
+#.......#
+#########
+
+---------------------
+Unit 0 G health 152
+Unit 1 E health 56
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+15
+#########
+#.G.....#
+#GEG#...#
+#.G##...#
+#...##..#
+#.G.#...#
+#.......#
+#.......#
+#########
+
+---------------------
+Unit 0 G health 149
+Unit 1 E health 44
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+16
+#########
+#.G.....#
+#GEG#...#
+#.G##...#
+#...##..#
+#.G.#...#
+#.......#
+#.......#
+#########
+
+---------------------
+Unit 0 G health 146
+Unit 1 E health 32
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+17
+#########
+#.G.....#
+#GEG#...#
+#.G##...#
+#...##..#
+#.G.#...#
+#.......#
+#.......#
+#########
+
+---------------------
+Unit 0 G health 143
+Unit 1 E health 20
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+18
+#########
+#.G.....#
+#GEG#...#
+#.G##...#
+#...##..#
+#.G.#...#
+#.......#
+#.......#
+#########
+
+---------------------
+Unit 0 G health 140
+Unit 1 E health 8
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+19
+#########
+#.G.....#
+#GEG#...#
+#.G##...#
+#...##..#
+#.G.#...#
+#.......#
+#.......#
+#########
+
+---------------------
+Unit 0 G health 137
+Unit 1 E health -1
+Unit 2 G health 200
+Unit 3 G health 200
+Unit 4 G health 200
+Unit 5 G health 200
+#########
+#.G.....#
+#G.G#...#
+#.G##...#
+#...##..#
+#.G.#...#
+#.......#
+#.......#
+#########
+
+End after 20 rounds
+score is 18740
+or score is 19677

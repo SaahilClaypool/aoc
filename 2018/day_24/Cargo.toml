@@ -1,0 +1,11 @@
+[package]
+name = "day_24"
+version = "0.1.0"
+authors = ["saahilclaypool <saahil@claypools.org>"]
+edition = "2018"
+
+[dependencies]
+lazy_static = "1.2.0"
+regex = "1.1.0"
+env_logger = "0.6.0"
+log = "0.4.6"

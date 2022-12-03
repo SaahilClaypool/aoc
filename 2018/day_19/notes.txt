@@ -1,0 +1,33 @@
+mult [1] by [3] into [2]
+eqrr [2] by [5] into [2]
+addr [2] by [4] into [4]
+addi [4] by  1  into [4]
+addi [3] by  1  into [3]
+if   [3]  > [5] into [2]
+addr [4] by [2] into [4]
+seti [2] by [3] into [4]
+
+This loops as long [4] < [5]
+
+# the inner loop says
+    while reg3 < 864 reg3 ++ 
+        reg2 = reg2 * reg5
+        reg2 = reg5 == reg2 
+        reg4 = reg2 + reg4 # 7
+        reg4 = reg4 + 1 # this just moves the program counter 1
+        reg0 = reg1 
+        reg3 = reg3 + reg1 
+        reg2 = reg3 > reg5 # reg5 is always 864
+        reg4 = reg4 + reg2 # counter is pushed 1 if reg3 > reg5
+        if reg3 > reg5
+            reg1 += 1
+            if reg1 > reg5 (864) {
+                reg4 = reg4 + reg2 
+            } else {
+                jump back to instruction 6
+            }
+
+        
+    
+
+

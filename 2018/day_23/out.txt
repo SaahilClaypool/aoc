@@ -1,0 +1,9 @@
+
+running 4 tests
+test tests::test ... ok
+test tests::test_in_range ... ok
+test tests::test_best_place_partition ... ok
+test tests::test_best_place ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+

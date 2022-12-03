@@ -1,0 +1,10 @@
+[package]
+name = "day_3"
+version = "0.1.0"
+authors = ["saahilclaypool <saahil@claypools.org>"]
+edition = "2018"
+
+[dependencies]
+regex = "1"
+simple-error = "*"
+lazy_static = "*"
