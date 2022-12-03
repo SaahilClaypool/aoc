@@ -78,7 +78,15 @@ namespace Aoc.Runner
 
         public bool Run()
         {
-            Output = Solve.Invoke(Input);
+            try
+            {
+                Output = Solve.Invoke(Input);
+            }
+            catch (Exception ex)
+            {
+                LogHelpers.Log($"Failed test {Name} with {ex.Message}");
+                return false;
+            }
             return Output == ExpectedOutput;
         }
     }
