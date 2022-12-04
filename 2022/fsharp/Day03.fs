@@ -12,10 +12,6 @@ let score (c: char) =
 type Day03() =
     inherit Day()
 
-    do
-        printfn $"Score A {score 'A'}"
-        printfn $"Score a {score 'a'}"
-
     override _.SolveA input =
         input.Split '\n'
         |> Seq.map (fun line ->
