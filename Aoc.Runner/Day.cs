@@ -84,7 +84,7 @@ namespace Aoc.Runner
             }
             catch (Exception ex)
             {
-                LogHelpers.Log($"Failed test {Name} with {ex.Message}");
+                LogHelpers.Log($"Failed test {Name} with {ex.Message}\n({ex.StackTrace})");
                 return false;
             }
             return Output == ExpectedOutput;
