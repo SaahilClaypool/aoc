@@ -31,4 +31,6 @@ public static class Helpers
             }
         }
     }
+
+    public static string[] Lines(this string s) => s.Split('\n');
 }
