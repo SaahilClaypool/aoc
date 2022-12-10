@@ -22,8 +22,8 @@ public partial class Day09 : Day
             if (!Adjacent(head))
             {
                 var moveX =
-                        head.X < X ? -1 : // tail is right of head -> move left
-                        head.X > X ? 1 : 0;
+                    head.X < X ? -1 : // tail is right of head -> move left
+                    head.X > X ? 1 : 0;
                 var moveY =
                     head.Y < Y ? -1 : // tail is above head -> move down
                     head.Y > Y ? 1 : 0;
@@ -37,10 +37,7 @@ public partial class Day09 : Day
         public Pos Pos { get; set; } = new(0, 0);
         public Knot? Next { get; set; }
         public Knot Last() => Next != null ? Next.Last() : this;
-        public override string ToString()
-        {
-            return $"{{ {Pos}\n\t- Next: {Next} \n}}";
-        }
+        public override string ToString() => $"{{ {Pos}\n\t- Next: {Next} \n}}";
     }
     record State(Knot Head, HashSet<Pos> TailLocs);
 
@@ -106,19 +103,19 @@ public partial class Day09 : Day
     {
         Tests = new()
         {
-            // new("A",
-            // """
-            // R 4
-            // U 4
-            // L 3
-            // D 1
-            // R 4
-            // D 1
-            // L 5
-            // R 2
-            // """,
-            // "13",
-            // SolveA),
+            new("A",
+            """
+            R 4
+            U 4
+            L 3
+            D 1
+            R 4
+            D 1
+            L 5
+            R 2
+            """,
+            "13",
+            SolveA),
             new("B Small",
             """
             R 4
@@ -132,19 +129,19 @@ public partial class Day09 : Day
             """,
             "1",
             SolveB),
-            // new("B",
-            // """
-            // R 5
-            // U 8
-            // L 8
-            // D 3
-            // R 17
-            // D 10
-            // L 25
-            // U 20
-            // """,
-            // "36",
-            // SolveB)
+            new("B",
+            """
+            R 5
+            U 8
+            L 8
+            D 3
+            R 17
+            D 10
+            L 25
+            U 20
+            """,
+            "36",
+            SolveB)
         };
     }
 }
