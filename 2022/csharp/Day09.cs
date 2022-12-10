@@ -3,8 +3,19 @@ namespace Aoc2022;
 
 public partial class Day09 : Day
 {
+    public override string SolveA(string input)
+    {
+        return Simulate(input, 2);
+    }
+
+    public override string SolveB(string input)
+    {
+        return Simulate(input, 10);
+    }
+
     record Pos(int X, int Y)
     {
+
         public bool Adjacent(Pos p) => Math.Abs(p.X - X) <= 1 && Math.Abs(p.Y - Y) <= 1;
         public Pos Follow(Pos head)
         {
@@ -24,21 +35,14 @@ public partial class Day09 : Day
     class Knot
     {
         public Pos Pos { get; set; } = new(0, 0);
-        public Knot? Next;
+        public Knot? Next { get; set; }
         public Knot Last() => Next != null ? Next.Last() : this;
+        public override string ToString()
+        {
+            return $"{{ {Pos}\n\t- Next: {Next} \n}}";
+        }
     }
     record State(Knot Head, HashSet<Pos> TailLocs);
-
-    public override string SolveA(string input)
-    {
-        var rope = new Knot() { Next = new() };
-        var state = new State(rope, new());
-        var states = input
-            .Split('\n')
-            .Rolling(state, Command);
-        
-        return states.Last().TailLocs.Count.ToString();
-    }
 
     private State Command(State state, string line)
     {
@@ -68,26 +72,54 @@ public partial class Day09 : Day
         state.Head.Pos = newHeadPos;
         Log($"Moving head to {newHeadPos}");
         var current = state.Head;
-        while(current.Next != null)
+        var i = 0;
+        while (current.Next != null)
         {
             var nextPos = current.Next.Pos.Follow(current.Pos);
-            Log($"Following {current.Next.Pos} to {nextPos}");
+            i++;
+            Log($"{i}: Following {current.Pos} from {current.Next.Pos} to {nextPos}");
             current.Next.Pos = nextPos;
             current = current.Next;
         }
         return state;
     }
 
-    public override string SolveB(string input)
+    private string Simulate(string input, int count)
     {
-        throw new NotImplementedException();
+        var rope = new Knot() { };
+        var current = rope;
+        for (var i = 0; i < count - 1; i++)
+        {
+            current.Next = new();
+            current = current.Next;
+        }
+        Log(rope);
+        var state = new State(rope, new());
+        var states = input
+            .Split('\n')
+            .Rolling(state, Command);
+
+        return states.Last().TailLocs.Count.ToString();
     }
 
     public Day09()
     {
         Tests = new()
         {
-            new("A",
+            // new("A",
+            // """
+            // R 4
+            // U 4
+            // L 3
+            // D 1
+            // R 4
+            // D 1
+            // L 5
+            // R 2
+            // """,
+            // "13",
+            // SolveA),
+            new("B Small",
             """
             R 4
             U 4
@@ -97,9 +129,22 @@ public partial class Day09 : Day
             D 1
             L 5
             R 2
-            """, 
-            "13",
-            SolveA)
+            """,
+            "1",
+            SolveB),
+            // new("B",
+            // """
+            // R 5
+            // U 8
+            // L 8
+            // D 3
+            // R 17
+            // D 10
+            // L 25
+            // U 20
+            // """,
+            // "36",
+            // SolveB)
         };
     }
 }
