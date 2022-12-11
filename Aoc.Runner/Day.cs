@@ -47,7 +47,7 @@ namespace Aoc.Runner
     public static class LogHelpers
     {
         private static bool IsTest = false;
-        public static void SetTest() => IsTest = true;
+        public static void SetTest(bool enable = true) => IsTest = enable;
 
         public static T Log<T>(T t)
         {
