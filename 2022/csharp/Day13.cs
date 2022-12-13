@@ -3,22 +3,24 @@ namespace Aoc2022;
 
 public partial class Day13 : Day
 {
-    record Data()
+    record Data() : IComparable
     {
-        public bool? InOrder(Data right)
+        public int CompareTo(object? obj) => InOrder(obj as Data ?? throw new Exception());
+
+        public int InOrder(Data right)
         {
             Log($"\t- Compare {this} vs {right}");
             if (this is IntData leftInt && right is IntData rightInt)
             {
                 if (leftInt.Value < rightInt.Value)
                 {
-                    return true;
+                    return -1;
                 }
                 else if (leftInt.Value > rightInt.Value)
                 {
-                    return false;
+                    return 1;
                 }
-                return null;
+                return 0;
             }
 
             if (this is ListData leftData && right is ListData rightData)
@@ -26,15 +28,15 @@ public partial class Day13 : Day
                 foreach (var (leftI, rightI) in leftData.Value.Zip(rightData.Value))
                 {
                     var inOrder = leftI.InOrder(rightI);
-                    if (inOrder != null)
+                    if (inOrder != 0)
                     {
                         return inOrder;
                     }
                 }
                 return
-                    leftData.Value.Count < rightData.Value.Count ? true :
-                    leftData.Value.Count > rightData.Value.Count ? false :
-                    null;
+                    leftData.Value.Count < rightData.Value.Count ? -1 :
+                    leftData.Value.Count > rightData.Value.Count ? 1 :
+                    0;
             }
             else
             {
@@ -68,7 +70,7 @@ public partial class Day13 : Day
             {
                 Log($"Comparing Pair #{pair.Item2}");
                 var inOrder = pair.Item1.Left.InOrder(pair.Item1.Right);
-                return inOrder == true;
+                return inOrder == -1;
             });
         return inOrder
             .Sum(p => p.Item2 + 1).ToString();
@@ -76,7 +78,14 @@ public partial class Day13 : Day
 
     public override string SolveB(string input)
     {
-        throw new NotImplementedException();
+        var pairs = Parse(input);
+        var flat = pairs.SelectMany(pair => new[] { pair.Left, pair.Right});
+        var two = ParseStr("[[2]]").Data;
+        var six = ParseStr("[[6]]").Data;
+        var withDividers = flat.Append(two).Append(six).ToList();
+        withDividers.Sort();
+
+        return ((withDividers.IndexOf(two) + 1) * (withDividers.IndexOf(six) + 1)).ToString();
     }
 
     List<(Data Left, Data Right)> Parse(string input) =>
@@ -237,9 +246,31 @@ public partial class Day13 : Day
 
             new("B",
             """
-            1
+            [1,1,3,1,1]
+            [1,1,5,1,1]
+
+            [[1],[2,3,4]]
+            [[1],4]
+
+            [9]
+            [[8,7,6]]
+
+            [[4,4],4,4]
+            [[4,4],4,4,4]
+
+            [7,7,7,7]
+            [7,7,7]
+
+            []
+            [3]
+
+            [[[]]]
+            [[]]
+
+            [1,[2,[3,[4,[5,6,7]]]],8,9]
+            [1,[2,[3,[4,[5,6,0]]]],8,9]
             """,
-            "",
+            "140",
             SolveB)
         };
     }
