@@ -93,13 +93,14 @@ public partial class Day11 : Day
 
     public override string SolveB(string input)
     {
+        var isTest = IsTest;
         // too big for logging
         var state = new State(Parse(input).ToDictionary(m => m.Number));
         var ring = state.Monkeys.Values.Select(v => v.Divisor).Aggregate((a, b) => a * b);
         Log($"Ring: {ring}");
         SetTest(false);
         var result = Simulate(state, 10000, divisor: 1, ring: ring);
-        SetTest(true);
+        SetTest(IsTest);
         Log(string.Join("\n", state.Monkeys.Values.Select(m => $"Monkey {m.Number} {m.Inspected}")));
         return result;
     }

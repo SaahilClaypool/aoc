@@ -91,7 +91,6 @@ public partial class Day12 : Day
             return (startingLoc, Cost: AStar(start with { Start = startingLoc, Current = startingLoc, VisitedEstimatedCost = new() }));
         }
         ).ToList();
-        Console.WriteLine(string.Join("\n", costs.Where(c => c.Cost != int.MaxValue)));
         return costs.MinBy(m => m.Cost).Cost.ToString();
     }
 
