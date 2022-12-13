@@ -1,0 +1,34 @@
+namespace Aoc2022;
+
+
+public partial class Day13 : Day
+{
+    public override string SolveA(string input)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override string SolveB(string input)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Day13()
+    {
+        Tests = new()
+        {
+            new("A",
+            """
+            1
+            """,
+            "",
+            SolveA),
+            new("B",
+            """
+            1
+            """,
+            "",
+            SolveB)
+        };
+    }
+}
