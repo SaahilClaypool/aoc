@@ -24,10 +24,10 @@ namespace Aoc.Runner
                 .ToList();
         }
 
-        public static bool TestDay(Day day)
+        public static bool TestDay(Day day, bool log = true)
         {
             day.IsTest = true;
-            LogHelpers.SetTest();
+            LogHelpers.SetTest(log);
             var failedTests = day.Tests.Select(test =>
             {
                 var (time, passed) = TimeIt(() => test.Run());
@@ -89,7 +89,7 @@ namespace Aoc.Runner
         }
 
         public static int TestAll() =>
-            Days().Where(day => TestDay(day)).Count();
+            Days().Where(day => TestDay(day, false)).Count();
 
         public static bool TestLast() =>
             !TestDay(Days().Last());
