@@ -17,6 +17,23 @@ public static class Helpers
         }
     }
 
+    public static IEnumerable<T> Rolling<T>(this IEnumerable<T> items, Func<T, T, T> select)
+    {
+        T last = default!;
+        var first = false;
+        foreach (var i in items)
+        {
+            if (!first)
+            {
+                first = true;
+                last = i;
+                continue;
+            }
+            last = select(last, i);
+            yield return last;
+        }
+    }
+
     public static IEnumerable<T> TakeWhile<T>(this IEnumerable<T> items, Func<T, bool> condition)
     {
         foreach (var i in items)

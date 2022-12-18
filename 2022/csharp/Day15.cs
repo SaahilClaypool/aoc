@@ -8,37 +8,66 @@ public partial class Day15 : Day
         return SolveAAt(input, 2000000);
     }
 
-    int OverlappingOnRow(Sensor s, Pos p, int minX, int maxX)
+    /// <summary>
+    /// for a given row, 
+    /// return the sensors coverage on this row
+    /// inclusive
+    /// </summary>
+    static (int start, int end)? SensorRowCoverage(Sensor s, int y)
     {
-        // because manhattan distance, its range - y distance to line * 2
-        var yDistanceToLine = Math.Abs(s.Loc.Y - p.Y);
-        var reducedRange = int.Max(0, s.Range - yDistanceToLine);
-        var fullLineCoverage = reducedRange * 2;
+        var yDist = Math.Abs(s.Loc.Y - y);
+        var reducedRange = s.Range - yDist;
+        if (reducedRange < 0)
+            return null;
 
-        var left = s.Loc.X - reducedRange;
-        var right = s.Loc.X + reducedRange;
-        var offLeft = left < minX ? minX - left : 0;
-        var offRight = right > maxX ? right - maxX : 0;
+        var xStart = s.Loc.X - reducedRange;
+        var xEnd = s.Loc.X + reducedRange;
+        return (xStart, xEnd);
+    }
 
-        return fullLineCoverage - offLeft - offRight;
+    static IEnumerable<(int start, int end)> MergeRanges(IEnumerable<(int start, int end)> ranges)
+    {
+        int? left = null;
+        int? right = null;
+        foreach (var range in ranges)
+        {
+            if (left is null)
+            {
+                (left, right) = range;
+                continue;
+            }
+            if (range.start <= right)
+            {
+                right = Math.Max(range.end, right!.Value);
+            }
+            else
+            {
+                yield return (left!.Value, right!.Value);
+                (left, right) = range;
+            }
+        }
+        yield return (left!.Value, right!.Value);
     }
 
     string SolveAAt(string input, int y)
     {
         var sensors = Parse(input).OrderByDescending(r => r.Range).ToList();
-        var minX = sensors.Min(s => s.Loc.X - s.Range);
-        var maxX = sensors.Max(s => s.Loc.X + s.Range);
-
         var beacons = sensors.Select(s => s.Beacon).ToHashSet();
 
-        return Enumerable
-            .Range(minX - 1, maxX - minX + 2)
-            .Select(p => new Pos(p, y))
-            .Where(p =>
-                !beacons.Contains(p) &&
-                sensors.Any(s => s.InRange(p)))
-            .Count()
-            .ToString();
+        var coverageRanges = sensors
+            .Select(s => SensorRowCoverage(s, y))
+            .Where(r => r != null)
+            .Select(r => r!.Value)
+            .OrderBy(r => r.start)
+            .ToList();
+
+        var mergedRanges = MergeRanges(coverageRanges);
+        var beaconsOnRow = beacons.Where(b => b.Y == y).Count();
+        var rangeCoverge = mergedRanges
+            .Select(r => r.end - r.start + 1)
+            .Sum();
+
+        return (rangeCoverge - beaconsOnRow).ToString();
     }
 
     public override string SolveB(string input)
@@ -46,9 +75,9 @@ public partial class Day15 : Day
         return SolveBBounded(input, 4000000);
     }
 
-    public override string SolveBBounded(string input, int max)
+    public string SolveBBounded(string input, int max)
     {
-        throw new  NotImplementedException();
+        throw new NotImplementedException();
     }
 
     public Day15()
