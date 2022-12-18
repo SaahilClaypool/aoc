@@ -7,6 +7,23 @@ public static class Helpers
 {
     public static IEnumerable<(T, int)> WithIndex<T>(this IEnumerable<T> items) => items.Select((t, i) => (t, i));
 
+    public static IEnumerable<(T A, T B)> Pairs<T>(this IEnumerable<T> items)
+    {
+        T past = default!;
+        var first = false;
+        foreach (var i in items)
+        {
+            if (!first)
+            {
+                first = true;
+                past = i;
+                continue;
+            }
+            yield return (past, i);
+            past = i;
+        }
+    }
+
     public static IEnumerable<R> Rolling<T, R>(this IEnumerable<T> items, R seed, Func<R, T, R> select)
     {
         var last = seed;

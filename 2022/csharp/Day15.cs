@@ -13,7 +13,7 @@ public partial class Day15 : Day
     /// return the sensors coverage on this row
     /// inclusive
     /// </summary>
-    static (int start, int end)? SensorRowCoverage(Sensor s, int y)
+    static (long start, long end)? SensorRowCoverage(Sensor s, long y)
     {
         var yDist = Math.Abs(s.Loc.Y - y);
         var reducedRange = s.Range - yDist;
@@ -25,10 +25,10 @@ public partial class Day15 : Day
         return (xStart, xEnd);
     }
 
-    static IEnumerable<(int start, int end)> MergeRanges(IEnumerable<(int start, int end)> ranges)
+    static IEnumerable<(long start, long end)> MergeRanges(IEnumerable<(long start, long end)> ranges)
     {
-        int? left = null;
-        int? right = null;
+        long? left = null;
+        long? right = null;
         foreach (var range in ranges)
         {
             if (left is null)
@@ -49,19 +49,12 @@ public partial class Day15 : Day
         yield return (left!.Value, right!.Value);
     }
 
-    string SolveAAt(string input, int y)
+    string SolveAAt(string input, long y)
     {
         var sensors = Parse(input).OrderByDescending(r => r.Range).ToList();
         var beacons = sensors.Select(s => s.Beacon).ToHashSet();
 
-        var coverageRanges = sensors
-            .Select(s => SensorRowCoverage(s, y))
-            .Where(r => r != null)
-            .Select(r => r!.Value)
-            .OrderBy(r => r.start)
-            .ToList();
-
-        var mergedRanges = MergeRanges(coverageRanges);
+        var mergedRanges = CoverageOnRow(y, sensors);
         var beaconsOnRow = beacons.Where(b => b.Y == y).Count();
         var rangeCoverge = mergedRanges
             .Select(r => r.end - r.start + 1)
@@ -70,14 +63,52 @@ public partial class Day15 : Day
         return (rangeCoverge - beaconsOnRow).ToString();
     }
 
+    private static IEnumerable<(long start, long end)> CoverageOnRow(long y, List<Sensor> sensors)
+    {
+        var coverageRanges = sensors
+            .Select(s => SensorRowCoverage(s, y))
+            .Where(r => r != null)
+            .Select(r => r!.Value)
+            .OrderBy(r => r.start)
+            .ToList();
+
+        var mergedRanges = MergeRanges(coverageRanges);
+        return mergedRanges;
+    }
+
     public override string SolveB(string input)
     {
         return SolveBBounded(input, 4000000);
     }
 
-    public string SolveBBounded(string input, int max)
+    public string SolveBBounded(string input, long max)
     {
-        throw new NotImplementedException();
+        var sensors = Parse(input).OrderByDescending(r => r.Range).ToList();
+        var beacons = sensors.Select(s => s.Beacon).ToHashSet();
+
+        Pos p = default!;
+
+        for (var y = 0; y <= max; y++)
+        {
+            var coverage = CoverageOnRow(y, sensors)
+                .Select(tuple => (
+                    start: Math.Clamp(tuple.start, 0, max),
+                    end: Math.Clamp(tuple.end, 0, max)
+                ))
+                .ToList();
+            
+            foreach (var (A, B) in coverage.Pairs())
+            {
+                if (B.start - A.end == 2)
+                {
+                    p = new(A.end + 1, y);
+                    goto outer;
+                }
+            }
+        }
+        outer: ;
+
+        return (p.X * 4000000 + p.Y).ToString();
     }
 
     public Day15()
@@ -134,7 +165,7 @@ public partial class Day15 : Day
             {
                 var positions = re.Matches(line)
                     .Select(m =>
-                        new Pos(int.Parse(m.Groups[1].Value), int.Parse(m.Groups[2].Value)))
+                        new Pos(long.Parse(m.Groups[1].Value), long.Parse(m.Groups[2].Value)))
                     .ToList();
                 return new Sensor(positions[0], positions[1]);
             }).ToList();
@@ -142,12 +173,12 @@ public partial class Day15 : Day
 
     record Sensor(Pos Loc, Pos Beacon)
     {
-        public int Range => Loc.Distance(Beacon);
+        public long Range => Loc.Distance(Beacon);
         public bool InRange(Pos p) => Loc.Distance(p) <= Range;
     };
-    record Pos(int X, int Y)
+    record Pos(long X, long Y)
     {
-        public int Distance(Pos other) =>
-            int.Abs(X - other.X) + int.Abs(Y - other.Y);
+        public long Distance(Pos other) =>
+            long.Abs(X - other.X) + long.Abs(Y - other.Y);
     };
 }
