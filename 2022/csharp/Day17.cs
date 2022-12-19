@@ -1,9 +1,11 @@
 namespace Aoc2022.Day17Solution;
+
+using System;
 using Pos = Aoc2022.GridType.Pos;
 
 class World
 {
-    record State(long ShapeNumber, long WindNumber);
+    public record State(long ShapeNumber, long WindNumber, long Height, long Round);
     long ShapeNumber = 0;
     long WindNumber = 0;
     public List<int> Movements { get; set; } = new();
@@ -21,7 +23,7 @@ class World
         public List<Pos> Move(int dx, int dy) => InitialPoints.Select(p => new Pos(p.Row + dy, p.Col + dx)).ToList();
     }
 
-    public void DropShape()
+    public (State prevState, State loopState, List<State>)? DropShape()
     {
         var shape = Shapes[ShapeNumber++ % Shapes.Length];
         var (X, Y) = (2, Height + 4);
@@ -32,7 +34,7 @@ class World
             turn++;
             if (turn % 2 == 1) // start with wind
             {
-                var dir = Movements[WindNumber++ % Movements.Count];
+                var dir = Movements[(int)(WindNumber++ % Movements.Count)];
                 var newX = X + dir;
                 var newPoints = shape.Move(newX, Y);
                 // hit nothing -> valid move
@@ -41,7 +43,6 @@ class World
                     points = newPoints;
                     X = newX;
                 }
-
             }
             else
             {
@@ -59,7 +60,23 @@ class World
             }
         }
         Add(points);
+
+        var loopState = new State(ShapeNumber % Shapes.Length, WindNumber % Movements.Count, Height, Round: ShapeNumber);
+        if (FullRow(Height))
+        {
+            Console.WriteLine($"Clear!");
+            if (States.FirstOrDefault(s => s with { Height = Height, Round = ShapeNumber } == loopState) is var prevState && prevState != null)
+            {
+                Console.WriteLine($"Found loop to loop! {loopState}");
+                return (prevState, loopState, States);
+            }
+        }
+        States.Add(loopState);
+        return null;
     }
+
+    private bool FullRow(int h) =>
+        Blocks.Where(b => b.Row == h).Count() == 7;
 
     void Add(IEnumerable<Pos> points)
     {
@@ -103,12 +120,32 @@ public partial class Day17 : Day
     {
         var world = Parse(input);
 
-        for (var i = 0L; i < 1_000_000_000_000; i++)
+        (World.State Prev, World.State Next, List<World.State> states)? repeat = null;
+        var shapes = 1000000000000L;
+        long i;
+        for (i = 0L; i < shapes; i++)
         {
-            world.DropShape();
+            repeat = world.DropShape();
+            if (repeat != null)
+            {
+                break;
+            }
         }
 
-        return world.Height.ToString();
+        var (prev, next, states) = repeat!.Value;
+
+        var distance = next.Round - prev.Round;
+        var heightDiff = next.Height - prev.Height;
+
+        var totalCycles = (shapes - prev.Round) / distance;
+        var totalHeight = totalCycles * heightDiff + prev.Height;
+        var remaining = (shapes - prev.Round) % distance;
+
+        var bonusHeightAtRound = states[states.IndexOf(prev) + (int)remaining].Height - prev.Height;
+
+        Console.WriteLine(new { totalCycles, totalHeight, remaining }.ToJson());
+
+        return (totalHeight + bonusHeightAtRound).ToString();
     }
 
     public Day17()
@@ -123,9 +160,9 @@ public partial class Day17 : Day
             SolveA),
             new("B",
             """
-            1
+            >>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>
             """,
-            "",
+            "1514285714288",
             SolveB)
         };
     }
