@@ -88,6 +88,9 @@ public partial class Day15 : Day
 
         Pos p = default!;
 
+        /// <summary>
+        /// This loops through all points - we only need to loop through points on the perimeter of the diamond
+        /// </summary>
         for (var y = 0; y <= max; y++)
         {
             var coverage = CoverageOnRow(y, sensors)

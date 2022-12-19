@@ -67,4 +67,6 @@ public static class Helpers
     }
 
     public static string[] Lines(this string s) => s.Split('\n');
+
+    public static string ToJson(this object s) => System.Text.Json.JsonSerializer.Serialize(s);
 }
