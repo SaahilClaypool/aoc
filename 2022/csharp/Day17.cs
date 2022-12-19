@@ -64,10 +64,8 @@ class World
         var loopState = new State(ShapeNumber % Shapes.Length, WindNumber % Movements.Count, Height, Round: ShapeNumber);
         if (FullRow(Height))
         {
-            Console.WriteLine($"Clear!");
             if (States.FirstOrDefault(s => s with { Height = Height, Round = ShapeNumber } == loopState) is var prevState && prevState != null)
             {
-                Console.WriteLine($"Found loop to loop! {loopState}");
                 return (prevState, loopState, States);
             }
         }
@@ -143,8 +141,6 @@ public partial class Day17 : Day
 
         var bonusHeightAtRound = states[states.IndexOf(prev) + (int)remaining].Height - prev.Height;
 
-        Console.WriteLine(new { totalCycles, totalHeight, remaining }.ToJson());
-
         return (totalHeight + bonusHeightAtRound).ToString();
     }
 
@@ -157,13 +153,7 @@ public partial class Day17 : Day
             >>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>
             """,
             "3068",
-            SolveA),
-            new("B",
-            """
-            >>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>
-            """,
-            "1514285714288",
-            SolveB)
+            SolveA)
         };
     }
 }
