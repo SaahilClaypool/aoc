@@ -69,4 +69,10 @@ public static class Helpers
     public static string[] Lines(this string s) => s.Split('\n');
 
     public static string ToJson(this object s) => System.Text.Json.JsonSerializer.Serialize(s);
+
+    public static void AddAll<T>(this HashSet<T> items, IEnumerable<T> others)
+    {
+        foreach (var i in others)
+            items.Add(i);
+    }
 }
