@@ -68,11 +68,49 @@ public static class Helpers
 
     public static string[] Lines(this string s) => s.Split('\n');
 
-    public static string ToJson(this object s) => System.Text.Json.JsonSerializer.Serialize(s);
+    public static string ToJson(this object s, bool indented = false) => System.Text.Json.JsonSerializer.Serialize(s, options: new()
+    {
+        WriteIndented = indented
+    });
 
     public static void AddAll<T>(this HashSet<T> items, IEnumerable<T> others)
     {
         foreach (var i in others)
             items.Add(i);
+    }
+
+    public static DefaultDictionary<K, V> ToDefaultDict<K, V>(this Dictionary<K, V> dict) where K : notnull => ToDefaultDict(dict, () => default!);
+    public static DefaultDictionary<K, V> ToDefaultDict<K, V>(this Dictionary<K, V> dict, Func<V> def) where K : notnull
+    {
+        var d = new DefaultDictionary<K, V>(def);
+        foreach (var (k, v) in dict)
+        {
+            d[k] = v;
+        }
+        return d;
+    }
+
+    public class DefaultDictionary<TKey, TValue> : Dictionary<TKey, TValue> where TKey : notnull
+    {
+        readonly Func<TValue> _init;
+        public DefaultDictionary(Func<TValue> init)
+        {
+            _init = init;
+        }
+
+        public DefaultDictionary()
+        {
+            _init = () => default!;
+        }
+        public new TValue this[TKey k]
+        {
+            get
+            {
+                if (!ContainsKey(k))
+                    Add(k, _init());
+                return base[k];
+            }
+            set => base[k] = value;
+        }
     }
 }
