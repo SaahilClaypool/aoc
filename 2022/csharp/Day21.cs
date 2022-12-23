@@ -11,19 +11,22 @@ public partial class Day21 : Day
         public string Left { get; set; } = string.Empty;
         public string Right { get; set; } = string.Empty;
         public Operation? Op { get; set;}
+        public HashSet<string>? Depends { get; set; } = null;
 
         public long Resolve(Dictionary<string, Monkey> monkeys, out HashSet<string> dependencies)
         {
             if (Value != null)
             {
                 dependencies = new HashSet<string>();
+                Depends ??= dependencies;
                 return Value.Value;
             }
             else
             {
                 var a = monkeys[Left].Resolve(monkeys, out var leftDepends);
                 var b = monkeys[Right].Resolve(monkeys, out var rightDepends);
-                dependencies = leftDepends.Concat(rightDepends).ToHashSet();
+                dependencies = leftDepends.Concat(rightDepends).Append(Left).Append(Right).ToHashSet();
+                Depends ??= dependencies;
                 var val = Op switch
                 {
                     Operation.Add => a + b,
@@ -67,8 +70,17 @@ public partial class Day21 : Day
     public override string SolveA(string input)
     {
         var m = ParseMonkeys(input);
-        return m["root"].Resolve(m).ToString();
+        return m["root"].Resolve(m, out var _).ToString();
     }
+
+    static Operation Invert(Operation o) => o switch
+    {
+        Operation.Add => Operation.Subtract,
+        Operation.Subtract => Operation.Add,
+        Operation.Multiply => Operation.Divide,
+        Operation.Divide => Operation.Multiply,
+        _ => throw new Exception()
+    };
 
     public override string SolveB(string input)
     {
@@ -77,16 +89,14 @@ public partial class Day21 : Day
         // h + e = c
         var m = ParseMonkeys(input);
         var root = m["root"];
-        m.Remove("humn");
+        root.Resolve(m, out var _);
 
-        static Operation Invert(Operation o) => o switch
+        // remove dependencies on humn
+        foreach (var monkey in m.Values.Where(_ => _.Depends!.Contains("humn")))
         {
-            Operation.Add => Operation.Subtract,
-            Operation.Subtract => Operation.Add,
-            Operation.Multiply => Operation.Divide,
-            Operation.Divide => Operation.Multiply,
-            _ => throw new Exception()
-        };
+            monkey.Value = null;
+        }
+        m.Remove("humn");
 
         var equations = m.Values.SelectMany(m =>
         {
@@ -100,27 +110,36 @@ public partial class Day21 : Day
                 new() { Name = m.Right, Op = Invert(m.Op!.Value), Left = m.Name, Right = m.Left },
             };
         })
-        .Append(new() { Name = "root", Left = root.Left, Right = root.Right, Op = Invert(root.Op!.Value) })
+        .Append(new() { Name = root.Left, Left = root.Name, Right = root.Right, Op = Invert(root.Op!.Value) })
+        .Append(new() { Name = root.Right, Left = root.Name, Right = root.Left, Op = Invert(root.Op!.Value) })
         .ToList();
         root.Value = 0;
+        equations.Add(root);
 
         var newMonkeys = equations.GroupBy(_ => _.Name).ToDictionary(_ => _.Key, _ => _.First());
-
         Dictionary<string, long> solved = equations.Where(_ => _.Value.HasValue).GroupBy(_ => _.Name).ToDictionary(_ => _.Key, _ => _.First().Value!.Value);
         equations.RemoveAll(e => solved.ContainsKey(e.Name));
 
         while (!solved.ContainsKey("humn"))
         {
+            equations.RemoveAll(e => solved.ContainsKey(e.Name));
             foreach (var eq in equations)
             {
-                if (solved.ContainsKey(eq.Left) && solved.ContainsKey(eq.Right))
+                if (solved.TryGetValue(eq.Left, out var left) && solved.TryGetValue(eq.Right, out var right))
                 {
-                    solved[eq.Name] = eq.Resolve(newMonkeys);
+                    newMonkeys[eq.Left].Value = left;
+                    newMonkeys[eq.Right].Value = right;
+                    solved[eq.Name] = eq.Resolve(newMonkeys, out var _);
+                    newMonkeys[eq.Name].Value = solved[eq.Name];
+                    Log($"{eq.Name} = {eq.Left} {eq.Op} {eq.Right}  = {left} {eq.Op} {right} = {eq.Value}");
+                    continue;
                 }
             }
         }
+
+        var humn = newMonkeys["humn"].Resolve(newMonkeys, out var _);
         
-        return newMonkeys["humn"].Resolve(newMonkeys).ToString();
+        return humn.ToString();
     }
 
     public Day21()
@@ -165,7 +184,7 @@ public partial class Day21 : Day
             drzm: hmdt - zczc
             hmdt: 32
             """,
-            "301",
+            "-299", // multiple valid on this day
             SolveB)
         };
     }
