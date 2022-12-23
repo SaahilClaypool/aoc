@@ -12,16 +12,18 @@ public partial class Day21 : Day
         public string Right { get; set; } = string.Empty;
         public Operation? Op { get; set;}
 
-        public long Resolve(Dictionary<string, Monkey> monkeys)
+        public long Resolve(Dictionary<string, Monkey> monkeys, out HashSet<string> dependencies)
         {
             if (Value != null)
             {
+                dependencies = new HashSet<string>();
                 return Value.Value;
             }
             else
             {
-                var a = monkeys[Left].Resolve(monkeys);
-                var b = monkeys[Right].Resolve(monkeys);
+                var a = monkeys[Left].Resolve(monkeys, out var leftDepends);
+                var b = monkeys[Right].Resolve(monkeys, out var rightDepends);
+                dependencies = leftDepends.Concat(rightDepends).ToHashSet();
                 var val = Op switch
                 {
                     Operation.Add => a + b,
@@ -70,10 +72,55 @@ public partial class Day21 : Day
 
     public override string SolveB(string input)
     {
+        // a + b = root
+        // c + d = a
+        // h + e = c
         var m = ParseMonkeys(input);
         var root = m["root"];
+        m.Remove("humn");
+
+        static Operation Invert(Operation o) => o switch
+        {
+            Operation.Add => Operation.Subtract,
+            Operation.Subtract => Operation.Add,
+            Operation.Multiply => Operation.Divide,
+            Operation.Divide => Operation.Multiply,
+            _ => throw new Exception()
+        };
+
+        var equations = m.Values.SelectMany(m =>
+        {
+            if (m.Value != null)
+            {
+                return new Monkey[] { m };
+            }
+            return new Monkey[]
+            {
+                new() { Name = m.Left, Op = Invert(m.Op!.Value), Left = m.Name, Right = m.Right },
+                new() { Name = m.Right, Op = Invert(m.Op!.Value), Left = m.Name, Right = m.Left },
+            };
+        })
+        .Append(new() { Name = "root", Left = root.Left, Right = root.Right, Op = Invert(root.Op!.Value) })
+        .ToList();
         root.Value = 0;
-        root.Op = Operation.Divide;
+
+        var newMonkeys = equations.GroupBy(_ => _.Name).ToDictionary(_ => _.Key, _ => _.First());
+
+        Dictionary<string, long> solved = equations.Where(_ => _.Value.HasValue).GroupBy(_ => _.Name).ToDictionary(_ => _.Key, _ => _.First().Value!.Value);
+        equations.RemoveAll(e => solved.ContainsKey(e.Name));
+
+        while (!solved.ContainsKey("humn"))
+        {
+            foreach (var eq in equations)
+            {
+                if (solved.ContainsKey(eq.Left) && solved.ContainsKey(eq.Right))
+                {
+                    solved[eq.Name] = eq.Resolve(newMonkeys);
+                }
+            }
+        }
+        
+        return newMonkeys["humn"].Resolve(newMonkeys).ToString();
     }
 
     public Day21()
