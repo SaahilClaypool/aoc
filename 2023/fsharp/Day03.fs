@@ -2,38 +2,34 @@ module Aoc.Solutions.Y2023.Day3
 
 open System.Collections.Generic
 
-type ruck = string * string
-
-let parse (line : string) =
-    printfn $"parsing {line}"
-    let midpoint = line.Length / 2
-    (line[0..midpoint - 1], line[midpoint..])
-
-let priority (letter : char) =
-    match System.Char.IsLower letter with
-    | true -> 1 + (int letter) - (int 'a')
-    | false -> 1 + (int letter) - (int 'A') + 26
-
-let overlap (ruck : ruck) =
-    let (left, right) = ruck
-    printfn $"lt: {left}\nrt: {right}"
-    let overlap =
-        (Set.ofSeq left)
-        |> Set.intersect (Set.ofSeq right)
-        |> Seq.head
-    
-    overlap
-
-
-let groupOverlap (group : seq<string>) =
-    (group |> Seq.map Set.ofSeq)
-    |> Seq.fold Set.intersect (Set.ofSeq (Seq.head group))
-    |> Seq.head
-
 open Aoc.Runner
 
 type Day03() =
     inherit Day()
+
+    let parse (line : string) =
+        let midpoint = line.Length / 2
+        (line[0..midpoint - 1], line[midpoint..])
+
+    let priority (letter : char) =
+        match System.Char.IsLower letter with
+        | true -> 1 + (int letter) - (int 'a')
+        | false -> 1 + (int letter) - (int 'A') + 26
+
+    let overlap (ruck : string * string) =
+        let (left, right) = ruck
+        let overlap =
+            (Set.ofSeq left)
+            |> Set.intersect (Set.ofSeq right)
+            |> Seq.head
+        
+        overlap
+
+    let groupOverlap (group : seq<string>) =
+        (group |> Seq.map Set.ofSeq)
+        |> Seq.fold Set.intersect (Set.ofSeq (Seq.head group))
+        |> Seq.head
+
 
     override _.SolveA input =
         input.Split('\n')
@@ -54,12 +50,7 @@ type Day03() =
             Test("priority", "L", "38", (fun x -> x[0] |> priority |> string ))
             Test(
                 "overlap", "vJrwpWtwJgWrhcsFMMfFFhFp", "p",
-                (fun x ->
-                    x
-                    |> parse
-                    |> overlap
-                    |> string
-                )
+                (parse >> trace >> overlap >> string)
             )
             Test(
                 "A",

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace Aoc.Runner
 {
@@ -54,6 +55,15 @@ namespace Aoc.Runner
             if (IsTest)
             {
                 Console.WriteLine(t?.ToString());
+            }
+            return t;
+        }
+
+        public static T Log<T>(this T t, [CallerArgumentExpression(nameof(t))] string? name = null)
+        {
+            if (IsTest)
+            {
+                Console.WriteLine($"{name} - {t?.ToString()}");
             }
             return t;
         }
