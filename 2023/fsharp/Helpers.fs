@@ -6,3 +6,6 @@ module Helpers =
     let trace (value : 'a) : 'a =
         LogHelpers.Log<'a>(value) |> ignore
         value
+    
+    let json o =
+        System.Text.Json.JsonSerializer.Serialize o

@@ -3,20 +3,21 @@ global using static Aoc.Solutions.Y2023.Ext;
 
 namespace Aoc.Solutions.Y2023;
 
-public class Day03 : Day
+public class Day03_22 : Day
 {
     (string Left, string Right) Parse(string line)
     {
         var midpoint = line.Length / 2;
         // range is exclusive - inclusive in f#
-        return (line[0..midpoint], line[midpoint..]);
+        return (line[..midpoint], line[midpoint..]);
     }
 
     int Priority(char letter) =>
-        char.IsLower(letter) switch
+        letter switch
         {
-            true => 1 + letter - 'a',
-            false => 1 + letter - 'A' + 26,
+            >= 'a' and <= 'z' => 1 + letter - 'a',
+            >= 'A' and <= 'Z' => 1 + letter - 'A' + 26,
+            _ => throw new NotImplementedException("invalid letter")
         };
 
     char Overlap(IEnumerable<string> blocks)

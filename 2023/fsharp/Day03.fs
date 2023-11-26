@@ -4,7 +4,7 @@ open System.Collections.Generic
 
 open Aoc.Runner
 
-type Day03() =
+type Day03_22() =
     inherit Day()
 
     let parse (line : string) =
@@ -12,9 +12,10 @@ type Day03() =
         (line[0..midpoint - 1], line[midpoint..])
 
     let priority (letter : char) =
-        match System.Char.IsLower letter with
-        | true -> 1 + (int letter) - (int 'a')
-        | false -> 1 + (int letter) - (int 'A') + 26
+        match letter with
+        | x when  x >= 'a' && x <= 'z'  -> 1 + (int x) - (int 'a')
+        | x when x >= 'A' && x <= 'Z' -> 1 + (int x) - (int 'A') + 26
+        | _ -> raise (System.Exception "invalid letter")
 
     let overlap (ruck : string * string) =
         let (left, right) = ruck
