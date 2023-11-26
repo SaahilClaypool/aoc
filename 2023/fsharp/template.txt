@@ -1,0 +1,12 @@
+module Aoc.Solutions.Y2023.Day{DD}
+
+open Aoc.Runner
+
+type Day06() =
+    inherit Day()
+
+    override _.SolveA input =
+        ""
+
+    override _.SolveB input =
+        ""

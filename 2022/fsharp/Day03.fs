@@ -2,7 +2,7 @@ module Aoc.Solutions.Day03
 
 open Aoc.Runner
 
-let score (c: char) = 
+let score c = 
     1 + 
     (if System.Char.IsUpper(c) then
         (int)c - (int)'A' + 26
