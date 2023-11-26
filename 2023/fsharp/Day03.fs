@@ -27,8 +27,11 @@ type Day03_22() =
         overlap
 
     let groupOverlap (group : seq<string>) =
-        (group |> Seq.map Set.ofSeq)
-        |> Seq.fold Set.intersect (Set.ofSeq (Seq.head group))
+        let sets = (group |> Seq.map Set.ofSeq)
+        let first = Seq.head sets
+        let rest = Seq.skip 1 sets 
+        rest
+        |> Seq.fold Set.intersect first
         |> Seq.head
 
 
