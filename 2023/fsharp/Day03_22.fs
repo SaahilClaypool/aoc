@@ -1,4 +1,4 @@
-module Aoc.Solutions.Y2023.Day3
+module Aoc.Solutions.Y2023.Day3_22
 
 open System.Collections.Generic
 

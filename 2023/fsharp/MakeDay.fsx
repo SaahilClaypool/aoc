@@ -7,9 +7,10 @@ let (|Int|_|) (str:string) =
     | _ -> None
 
 let make_day day path =
+    printfn $"Making {day} - {path}"
     let (output, num) =
         match day with
-        | Int i -> ($"{path}/Day%02d{i}.fs", string i)
+        | Int i -> ($"{path}/Day%02d{i}.fs", $"%02d{i}")
         | _ -> ($"{path}/{day}", day)
 
     let template = (File.ReadAllText $"{path}/template.txt").Replace("{DD}", num)
@@ -24,7 +25,11 @@ let make_day day path =
         let itemGroup = doc.SelectSingleNode "(//ItemGroup)[1]"
         let compileEl = doc.CreateElement "Compile" in
             compileEl.SetAttribute("Include", Path.GetFileName output)
-        itemGroup.AppendChild (compileEl) |> ignore
+        itemGroup.InsertBefore(compileEl, itemGroup.LastChild) |> ignore
+        let input = $"{path}/../inputs/Day_{num}.txt"
+        if not (File.Exists input) then
+            (File.CreateText input).Dispose |> ignore
+
         doc.Save fspath
         output
 
