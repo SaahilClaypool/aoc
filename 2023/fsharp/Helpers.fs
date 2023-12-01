@@ -9,3 +9,6 @@ module Helpers =
     
     let json o =
         System.Text.Json.JsonSerializer.Serialize o
+
+    let dump (value : 'a) : unit =
+        LogHelpers.Log<string>(json value) |> ignore

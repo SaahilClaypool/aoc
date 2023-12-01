@@ -3,49 +3,25 @@ module Aoc.Solutions.Y2023.Day1
 open Aoc.Runner
 open System.Collections.Generic
 
-let parseLine line =
+let parseA line =
     line |> Seq.filter System.Char.IsDigit
 
 let parseInput (str: string) =
     str.Split '\n'
 
-
-
 let parseB (line: string) =
+    let digits = [| "zero"; "one";"two";"three";"four";"five";"six";"seven";"eight";"nine" |] |> Seq.indexed
+    let nums = [| 0;1;2;3;4;5;6;7;8;9; |] |> Seq.map string |> Seq.indexed
+    let map = Seq.concat [|digits; nums |]
     seq {
-        let mutable i = 0
-        while i < line.Length do
-            let temp = line[i..]
-            let digit =
-                if System.Char.IsDigit temp[0] then
-                    let x = temp[0]
-                    x
-                elif temp.StartsWith "zero" then
-                    '0'
-                elif temp.StartsWith "one" then
-                    '1'
-                elif temp.StartsWith "two" then
-                    '2'
-                elif temp.StartsWith "three" then
-                    '3'
-                elif temp.StartsWith "four" then
-                    '4'
-                elif temp.StartsWith "five" then
-                    '5'
-                elif temp.StartsWith "six" then
-                    '6'
-                elif temp.StartsWith "seven" then
-                    '7'
-                elif temp.StartsWith "eight" then
-                    '8'
-                elif temp.StartsWith "nine" then
-                    '9'
-                else
-                    'x'
-            i <- i + 1
-            if System.Char.IsDigit digit then
-                yield digit
+        for i in 0..line.Length do
+            let m = Seq.tryFind (fun ((v: int), (k: string)) -> line[i..].StartsWith k) map
+            match m with
+            | Some value ->
+                yield (fst value).ToString()[0]
+            | None -> ()
     }
+    
 let sampleA = """1abc2
 pqr3stu8vwx
 a1b2c3d4e5f
@@ -62,11 +38,11 @@ zoneight234
 type Day01() =
     inherit Day()
 
-    override _.SolveA input =
+    let solve parser input =
         input
         |> parseInput
         |> Seq.map (fun line  ->
-            let parsed = parseLine line
+            let parsed = parser line
             let first = Seq.head parsed
             let last = Seq.last parsed
             $"{first}{last}"
@@ -75,18 +51,10 @@ type Day01() =
         |> Seq.sum
         |> string
 
-    override _.SolveB input =
-        input
-        |> parseInput
-        |> Seq.map (fun line  ->
-            let parsed = parseB line
-            let first = Seq.head parsed
-            let last = Seq.last parsed
-            $"{first}{last}"
-        )
-        |> Seq.map int
-        |> Seq.sum
-        |> string
+
+    override _.SolveA input = input |> solve parseA
+
+    override _.SolveB input = input |> solve parseB
     
     override this.Tests =
         [
