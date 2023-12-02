@@ -1,6 +1,9 @@
 module Aoc.Solutions.Y2023.Day{DD}
 
 open Aoc.Runner
+open System
+open System.Text.RegularExpressions
+open System.Collections.Generic
 
 type Day{DD}() =
     inherit Day()
@@ -10,3 +13,8 @@ type Day{DD}() =
 
     override _.SolveB input =
         ""
+    override this.Tests =
+        [
+            Test("a", "sample", "output", fun x -> this.SolveA x);
+        ]
+        |> List<Test>
