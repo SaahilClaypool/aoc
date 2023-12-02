@@ -3,6 +3,8 @@ namespace Aoc.Solutions.Y2023
 [<AutoOpen>]
 module Helpers =
     open Aoc.Runner
+    open System.Collections.Generic
+    open System
     let trace (value : 'a) : 'a =
         LogHelpers.Log<'a>(value) |> ignore
         value
@@ -12,3 +14,17 @@ module Helpers =
 
     let dump (value : 'a) : unit =
         LogHelpers.Log<string>(json value) |> ignore
+    
+    /// <summary>behave like c# raw string literal</summary>
+    let raw (str: string) =
+        // like c#, last line determines the depth
+        let lines = str.Split '\n'
+        let whitespace = Seq.last lines
+        match whitespace with
+        | leadingWhitespace when String.IsNullOrWhiteSpace leadingWhitespace ->
+            lines
+            |> Seq.skip 1
+            |> Seq.map (fun line -> line[leadingWhitespace.Length..])
+            |> Seq.fold (fun state next -> $"{state}\n{next}") ""
+            |> (fun x -> x[1..(x.Length - 2)])
+        | _ -> str
