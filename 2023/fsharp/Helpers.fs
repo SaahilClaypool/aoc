@@ -5,6 +5,8 @@ module Helpers =
     open Aoc.Runner
     open System.Collections.Generic
     open System
+    let lines (str: string) =
+        str.Split '\n'
     let trace (value : 'a) : 'a =
         LogHelpers.Log<'a>(value) |> ignore
         value
@@ -28,3 +30,8 @@ module Helpers =
             |> Seq.fold (fun state next -> $"{state}\n{next}") ""
             |> (fun x -> x[1..(x.Length - 2)])
         | _ -> str
+
+module Seq =
+    let product (s : seq<int>) =
+        s
+        |> Seq.fold (fun state next -> state * next) 1

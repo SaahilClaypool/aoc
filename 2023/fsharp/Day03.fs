@@ -11,10 +11,6 @@ type Pos = { Row: int; Col: int }
 type Number = { Pos: Pos; Num: int }
 type Sym = { Pos: Pos; Symbol: string }
 
-type Thing =
-| Num of Number
-| Sym of Sym
-
 let adj pos =
     seq {
         for r in -1..1 do
@@ -22,50 +18,39 @@ let adj pos =
                 yield { Row = pos.Row + r; Col = pos.Col + c }
     }
 
-
-let parseRegex (input: string) =
-    // match 
-    let re = Regex("(\\d+)|([^\\d\\.]+)")
+let pointsInString pos (str: string) = 
     seq {
-        for (row, line) in (input.Split '\n') |> Seq.indexed do
-            let matches = re.Matches(line)
-            for m in matches do
-                let numMatch = m.Groups[1]
-                let symMatch = m.Groups[2]
-                if numMatch.Index >= 0 && numMatch.Value.Length > 0 then
-                    let p = { Row = row; Col = numMatch.Index }
-                    yield (p, Num({ Pos = p; Num = int numMatch.Value }))
-                elif symMatch.Index >= 0 && symMatch.Value.Length > 0 then
-                    let p = { Row = row; Col = symMatch.Index }
-                    yield (p, Sym({ Pos = p; Symbol = symMatch.Value }))
+        for i in 0..(str.Length - 1) do
+            yield { pos with Col = pos.Col + i }
     }
-    |> Map.ofSeq
 
-let mapToExpanded (inp: Map<Pos, Thing>) =
-    seq {
-        for kvp in inp do
-            let v = kvp.Value
-            let pos = kvp.Key
-            match v with
-            | Num num ->
-                for i in 0..((string num.Num).Length - 1) do
-                    yield ({pos with Col = pos.Col + i }, v)
-            | _ -> yield (pos, v)
-    }
-    |> Map.ofSeq
-
-let adjPointsToNum (num: Number) =
-    let pointsInNum = 
-        seq {
-            for i in 0..((string num.Num).Length - 1) do
-                yield { num.Pos with Col = num.Pos.Col + i }
-        }
-    pointsInNum
+let adjRange pos (text: string) =
+    let pis = pointsInString pos text
+    pis
     |> Seq.map adj
     |> Seq.concat
-    |> Seq.filter (fun x -> not (Seq.contains x pointsInNum ))
+    |> Seq.filter (fun x -> not (Seq.contains x pis))
     |> Seq.distinct
 
+let parse input =
+    let numRe = Regex @"\d+"
+    let symRe = Regex @"[^\d\.]+"
+    let matchPositions (re: Regex) =
+        lines input
+        |> Seq.indexed
+        |> Seq.map (fun (row, line) ->
+            let matches = re.Matches line
+            seq {
+                for m in matches do
+                    if not (String.IsNullOrWhiteSpace m.Value) then
+                        yield (m.Value, { Col = m.Index; Row = row })
+            }
+        )
+        |> Seq.concat
+    let nums = matchPositions numRe
+    let syms = matchPositions symRe
+    
+    (nums, syms)
 
 type Day03() =
     inherit Day()
@@ -84,107 +69,60 @@ type Day03() =
             .664.598..
             """
 
+    // sum of nums where syms next to exactly two nums
     override _.SolveA input =
-        let things = input |> parseRegex
-        let syms =
-            things.Values
-            |> Seq.choose 
-                (fun x ->
-                    match x with
-                    | Sym sym -> Some(sym)
-                    | _ -> None)
-        
-        let symPos = syms |> Seq.map (fun x -> x.Pos)
-
-        let nums =
-            things.Values
-            |> Seq.choose 
-                (fun x ->
-                    match x with
-                    | Num num -> Some(num)
-                    | _ -> None)
-
-        let numsNextToSym =
+        let (nums, syms) = input |> parse
+        let numsMap =
             nums
-            |> Seq.filter (fun num ->
-                let adj = adjPointsToNum num
-                let adjacentSymbol =
-                    Seq.tryFind (fun pos ->
-                        Seq.contains pos symPos
-                    ) adj
-                adjacentSymbol.IsSome
+            |> Seq.map (fun n ->
+                pointsInString (snd n) (fst n)
+                |> Seq.map (fun p -> (p, n)))
+            |> Seq.concat
+            |> Map.ofSeq
+        
+        let validSyms =
+            syms
+            |> Seq.choose  (fun s ->
+                let a = adj (snd s)
+                let adjNums = a |> Seq.choose numsMap.TryFind |> Seq.distinct
+                match Seq.length adjNums with
+                | x when x >= 1 -> Some (adjNums |> Seq.map (fst >> int))
+                | _ -> None
             )
         
-        numsNextToSym
-        |> Seq.map (fun x -> x.Num)
+        validSyms
+        |> Seq.map Seq.sum
         |> Seq.sum
         |> string
 
     override _.SolveB input =
-        let parsed = (parseRegex input) |> mapToExpanded
-        let possibleGears =
-            parsed.Values
-            |> Seq.choose (fun x ->
-                match x with
-                | Sym sym when sym.Symbol = "*" -> Some(sym)
-                | _ -> None
-            )
-        let numbers = 
-            parsed
-            |> Seq.map (fun kvp -> (kvp.Key, kvp.Value))
-            |> Seq.choose (fun x ->
-                match x with
-                | (x, Num num) -> Some((x, num))
-                | _ -> None
-            )
+        let (nums, syms) = input |> parse
+        let numsMap =
+            nums
+            |> Seq.map (fun n ->
+                pointsInString (snd n) (fst n)
+                |> Seq.map (fun p -> (p, n)))
+            |> Seq.concat
             |> Map.ofSeq
         
-        let validGears = 
-            possibleGears
-            |> Seq.choose (fun gear ->
-                let adjPositionsToGear = adj gear.Pos
-                let adjacentNumbers =
-                    adjPositionsToGear
-                    |> Seq.choose numbers.TryFind
-                    |> Seq.distinct
-                if Seq.length adjacentNumbers = 2 then
-                    Some(adjacentNumbers)
-                else
-                    None
+        let validSyms =
+            syms
+            |> Seq.choose  (fun s ->
+                let a = adj (snd s)
+                let adjNums = a |> Seq.choose numsMap.TryFind |> Seq.distinct
+                match Seq.length adjNums with
+                | x when x = 2 -> Some (adjNums |> Seq.map (fst >> int))
+                | _ -> None
             )
         
-        validGears
-        |> Seq.map
-            (fun gearNumbers ->
-                gearNumbers
-                |> Seq.map (fun n -> n.Num)
-                |> Seq.fold (fun state x -> state * x) 1)
-            
+        validSyms
+        |> Seq.map Seq.product
         |> Seq.sum
         |> string
 
+
     override this.Tests =
         [
-            Test(
-                "parse",
-                raw"""
-                467..114..
-                ...*......
-                ..35..633.
-                """,
-                "5",
-                fun input -> parseRegex input |> Seq.length |> string
-            );
-            Test(
-                "parse",
-                raw"""
-                467..114..
-                ...*......
-                ..35..633.
-                """,
-                "12",
-                fun input -> parseRegex input |> mapToExpanded |> Seq.length |> string
-            );
             Test(
                 "a",
                 samp,
