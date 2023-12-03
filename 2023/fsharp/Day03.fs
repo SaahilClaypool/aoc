@@ -25,7 +25,7 @@ let adj pos =
 
 let parseRegex (input: string) =
     // match 
-    let re = Regex("(\\d+)|([^\\d\\.]+)")
+    let re = Regex(@"(\d+)|([^\d])")
     seq {
         for (row, line) in (input.Split '\n') |> Seq.indexed do
             let matches = re.Matches(line)
@@ -137,17 +137,16 @@ type Day03() =
                 | (x, Num num) -> Some((x, num))
                 | _ -> None
             )
+            |> Map.ofSeq
         
         let validGears = 
             possibleGears
             |> Seq.choose (fun gear ->
                 let adjPositionsToGear = adj gear.Pos
                 let adjacentNumbers =
-                    numbers
-                    |> Seq.filter (fun num ->
-                        Seq.contains (fst num) adjPositionsToGear
-                    )
-                    |> Seq.distinctBy (fun x -> (snd x).Pos)
+                    adjPositionsToGear
+                    |> Seq.choose numbers.TryFind
+                    |> Seq.distinct
                 if Seq.length adjacentNumbers = 2 then
                     Some(adjacentNumbers)
                 else
@@ -158,7 +157,7 @@ type Day03() =
         |> Seq.map
             (fun gearNumbers ->
                 gearNumbers
-                |> Seq.map (fun n -> (snd n).Num)
+                |> Seq.map (fun n -> n.Num)
                 |> Seq.fold (fun state x -> state * x) 1)
             
         |> Seq.sum
