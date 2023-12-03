@@ -23,45 +23,22 @@ let adj pos =
     }
 
 
-let parse (input: string): (Map<Pos, Thing>) =
-    let lines = input.Split '\n'
-
-    let things =
-        seq {
-            for (row, line) in Seq.indexed lines do
-                let mutable inNum = false
-                let mutable currentNum = ""
-                let mutable numStart = 0
-                for (col, c) in Seq.indexed line do
-                    if (Char.IsDigit c) && (not inNum) then
-                        inNum <- true
-                        numStart <- col
-                        currentNum <- currentNum + string c
-                        None |> ignore
-                    elif (Char.IsDigit c) && (inNum) then
-                        currentNum <- currentNum + string c
-                        None |> ignore
-                    elif inNum then // end num  
-                        inNum <- false
-                        let num = currentNum
-                        currentNum <- ""
-                        yield Num({Pos= {Row= row; Col= col - num.Length}; Num = int num })
-                    if (c = '.') then
-                        None |> ignore
-                    elif (not (Char.IsDigit c)) then
-                        inNum <- false
-                        yield Sym({Pos = {Row= row; Col= col }; Symbol = string c })
-                if inNum then
-                    yield Num({Pos= {Row= row; Col= line.Length - currentNum.Length }; Num = int currentNum })
-        }
-        |> List.ofSeq
-
-    things
-    |> Seq.map (fun thing ->
-        match thing with
-        | Num num -> (num.Pos, Num(num))
-        | Sym sym -> (sym.Pos, Sym(sym))
-    )
+let parseRegex (input: string) =
+    // match 
+    let re = Regex("(\\d+)|([^\\d\\.]+)")
+    seq {
+        for (row, line) in (input.Split '\n') |> Seq.indexed do
+            let matches = re.Matches(line)
+            for m in matches do
+                let numMatch = m.Groups[1]
+                let symMatch = m.Groups[2]
+                if numMatch.Index >= 0 && numMatch.Value.Length > 0 then
+                    let p = { Row = row; Col = numMatch.Index }
+                    yield (p, Num({ Pos = p; Num = int numMatch.Value }))
+                elif symMatch.Index >= 0 && symMatch.Value.Length > 0 then
+                    let p = { Row = row; Col = symMatch.Index }
+                    yield (p, Sym({ Pos = p; Symbol = symMatch.Value }))
+    }
     |> Map.ofSeq
 
 let mapToExpanded (inp: Map<Pos, Thing>) =
@@ -93,8 +70,22 @@ let adjPointsToNum (num: Number) =
 type Day03() =
     inherit Day()
 
+    let samp = 
+        raw"""
+            467..114..
+            ...*......
+            ..35..633.
+            ......#...
+            617*......
+            .....+.58.
+            ..592.....
+            ......755.
+            ...$.*....
+            .664.598..
+            """
+
     override _.SolveA input =
-        let things = input |> parse
+        let things = input |> parseRegex
         let syms =
             things.Values
             |> Seq.choose 
@@ -123,7 +114,6 @@ type Day03() =
                     ) adj
                 adjacentSymbol.IsSome
             )
-        dump (numsNextToSym |> Seq.map (fun x -> x.Num))
         
         numsNextToSym
         |> Seq.map (fun x -> x.Num)
@@ -131,7 +121,49 @@ type Day03() =
         |> string
 
     override _.SolveB input =
-        ""
+        let parsed = (parseRegex input) |> mapToExpanded
+        let possibleGears =
+            parsed.Values
+            |> Seq.choose (fun x ->
+                match x with
+                | Sym sym when sym.Symbol = "*" -> Some(sym)
+                | _ -> None
+            )
+        let numbers = 
+            parsed
+            |> Seq.map (fun kvp -> (kvp.Key, kvp.Value))
+            |> Seq.choose (fun x ->
+                match x with
+                | (x, Num num) -> Some((x, num))
+                | _ -> None
+            )
+        
+        let validGears = 
+            possibleGears
+            |> Seq.choose (fun gear ->
+                let adjPositionsToGear = adj gear.Pos
+                let adjacentNumbers =
+                    numbers
+                    |> Seq.filter (fun num ->
+                        Seq.contains (fst num) adjPositionsToGear
+                    )
+                    |> Seq.distinctBy (fun x -> (snd x).Pos)
+                if Seq.length adjacentNumbers = 2 then
+                    Some(adjacentNumbers)
+                else
+                    None
+            )
+        
+        validGears
+        |> Seq.map
+            (fun gearNumbers ->
+                gearNumbers
+                |> Seq.map (fun n -> (snd n).Num)
+                |> Seq.fold (fun state x -> state * x) 1)
+            
+        |> Seq.sum
+        |> string
+
     override this.Tests =
         [
             Test(
@@ -142,7 +174,7 @@ type Day03() =
                 ..35..633.
                 """,
                 "5",
-                fun input -> parse input |> Seq.length |> string
+                fun input -> parseRegex input |> Seq.length |> string
             );
             Test(
                 "parse",
@@ -152,24 +184,19 @@ type Day03() =
                 ..35..633.
                 """,
                 "12",
-                fun input -> parse input |> mapToExpanded |> Seq.length |> string
+                fun input -> parseRegex input |> mapToExpanded |> Seq.length |> string
             );
             Test(
                 "a",
-                raw"""
-                    467..114..
-                    ...*......
-                    ..35..633.
-                    ......#...
-                    617*......
-                    .....+.58.
-                    ..592.....
-                    ......755.
-                    ...$.*....
-                    .664.598..
-                    """,
+                samp,
                 "4361",
                 fun input -> this.SolveA input
+            );
+            Test(
+                "b",
+                samp,
+                "467835",
+                fun input -> this.SolveB input
             );
         ]
         |> List<Test>
