@@ -25,7 +25,7 @@ let adj pos =
 
 let parseRegex (input: string) =
     // match 
-    let re = Regex(@"(\d+)|([^\d])")
+    let re = Regex("(\\d+)|([^\\d\\.]+)")
     seq {
         for (row, line) in (input.Split '\n') |> Seq.indexed do
             let matches = re.Matches(line)
@@ -165,6 +165,26 @@ type Day03() =
 
     override this.Tests =
         [
+            Test(
+                "parse",
+                raw"""
+                467..114..
+                ...*......
+                ..35..633.
+                """,
+                "5",
+                fun input -> parseRegex input |> Seq.length |> string
+            );
+            Test(
+                "parse",
+                raw"""
+                467..114..
+                ...*......
+                ..35..633.
+                """,
+                "12",
+                fun input -> parseRegex input |> mapToExpanded |> Seq.length |> string
+            );
             Test(
                 "a",
                 samp,
