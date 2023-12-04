@@ -27,7 +27,7 @@ let score (left, right) =
 
 
 
-let rec treeScoreCard (state: Dictionary<int, seq<int>>) (cards: list<(Set<int> * Set<int>)>) (cardNum: int) =
+let rec treeScoreCard (state: Dictionary<int, ResizeArray<int>>) (cards: list<(Set<int> * Set<int>)>) (cardNum: int) =
     match state.GetValueOrDefault cardNum with
     | null ->
         let matches = matches cards[cardNum - 1] |> Seq.length
@@ -40,13 +40,13 @@ let rec treeScoreCard (state: Dictionary<int, seq<int>>) (cards: list<(Set<int> 
                     copyCards
                     |> Seq.map (fun x -> treeScoreCard state cards x)
                 copyOutputs |> Seq.concat
-        state.Add(cardNum, Seq.concat [ seq  [cardNum]; allDerivativeNumbers ])
+        state.Add(cardNum, Seq.concat [ seq  [cardNum]; allDerivativeNumbers ] |> ResizeArray)
         state[cardNum]
     | x -> x
 
 
 let treeScore (cards: list<(Set<int> * Set<int>)>) =
-    let state = Dictionary<int, seq<int>>()
+    let state = Dictionary<int, ResizeArray<int>>()
     let winnings =
         seq {
             for (num, card) in cards |> Seq.indexed do
