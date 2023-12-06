@@ -16,6 +16,9 @@ module Helpers =
 
     let dump (value : 'a) : unit =
         LogHelpers.Log<string>(json value) |> ignore
+
+    let lg (value : string) : unit =
+        LogHelpers.Log<string>(value) |> ignore
     
     /// <summary>behave like c# raw string literal</summary>
     let raw (str: string) =
