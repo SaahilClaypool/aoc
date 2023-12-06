@@ -38,3 +38,7 @@ module Seq =
     let product (s : seq<int>) =
         s
         |> Seq.fold (fun state next -> state * next) 1
+
+    let productL (s : seq<int64>) =
+        s
+        |> Seq.fold (fun state next -> state * next) 1L
