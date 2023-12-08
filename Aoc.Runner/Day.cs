@@ -59,9 +59,9 @@ namespace Aoc.Runner
             return t;
         }
 
-        public static T Log<T>(this T t, [CallerArgumentExpression(nameof(t))] string? name = null)
+        public static T Log<T>(this T t, [CallerArgumentExpression(nameof(t))] string? name = null, bool ignoreTest = false)
         {
-            if (IsTest)
+            if (IsTest || ignoreTest)
             {
                 Console.WriteLine($"{name} - {t?.ToString()}");
             }
