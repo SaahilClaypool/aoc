@@ -4,6 +4,7 @@ namespace Aoc.Solutions.Y2023;
 
 public class Day07 : Day
 {
+    static bool JLow = false;
     enum HandType
     {
         Five = 5,
@@ -17,6 +18,39 @@ public class Day07 : Day
 
     record Bid(List<int> Hand, int Val) : IComparable<Bid>, IComparable
     {
+        int J = 11;
+        public Bid FindBest()
+        {
+            var ars = new List<List<int>>()
+            {
+                new()
+            };
+            foreach (var i in Hand)
+            {
+                if (i != J)
+                {
+                    foreach (var ar in ars)
+                    {
+                        ar.Add(i);
+                    }
+                }
+                else
+                {
+                    var next = new List<List<int>>();
+                    foreach (var x in new[] { 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14 })
+                    {
+                        foreach (var ar in ars)
+                        {
+                            next.Add(ar.Append(x).ToList());
+                        }
+                    }
+                    ars = next;
+                }
+            }
+            var possible = ars.Select(x => new Bid(x, Val));
+            return possible.OrderByDescending(x => x.Type()).First();
+        }
+
         public override string ToString()
         {
             var toLetter = (int x) => x switch
@@ -30,8 +64,14 @@ public class Day07 : Day
             };
             return $"{string.Join("", Hand.Select(toLetter))} {Val} ({Type()})";
         }
+        HandType? _type = null;
         public HandType Type()
         {
+            if (JLow && Hand.Contains(J))
+            {
+                _type ??= FindBest().Type();
+                return _type.Value;
+            }
             var highest = Hand.GroupBy(x => x)
                 .OrderByDescending(x => x.Count())
                 .Select(x => x.Count())
@@ -63,7 +103,7 @@ public class Day07 : Day
             return 0;
         }
     }
-    
+
     Bid ParseLine(string line) =>
         new(
             line.Split(" ")[0].Select(c => "0123456789TJQKA".IndexOf(c)).ToList(),
@@ -76,12 +116,17 @@ public class Day07 : Day
     {
         if (left.Type() != right.Type())
             return left.Type().CompareTo(right.Type());
-        return left.Hand.Zip(right.Hand).FirstOrDefault(x => x.First != x.Second)
-            .Pipe(x => x.First.CompareTo(x.Second));
+        return left.Hand
+            .Select(x => JLow && x == 11 ? -1 : x).Zip(
+                right.Hand.Select(x => JLow && x == 11 ? -1 : x))
+            .FirstOrDefault(x => x.First != x.Second)
+            .Pipe(x =>
+                x.First.CompareTo(x.Second));
     }
 
     public override string SolveA(string input)
     {
+        JLow = false;
         var parsed = input.Pipe(ParseInput).ToList();
         parsed.Sort();
         var d = parsed.ToDictionary(x => x.Val);
@@ -90,14 +135,20 @@ public class Day07 : Day
 
     public override string SolveB(string input)
     {
-        throw new NotImplementedException();
+        JLow = true;
+        var parsed = input.Pipe(ParseInput)
+            .ToList();
+        parsed.Sort();
+        var d = parsed.ToDictionary(x => x.Val);
+        return parsed.Select((x, i) => x.Val * (i + 1)).Sum().ToString();
     }
 
     public Day07()
     {
         Tests = new()
         {
-            new("a", Sample, "6440", SolveA)
+            new("a", Sample, "6440", SolveA),
+            new("b", Sample, "5905", SolveB)
         };
     }
 
