@@ -42,3 +42,6 @@ module Seq =
     let productL (s : seq<int64>) =
         s
         |> Seq.fold (fun state next -> state * next) 1L
+    
+    let all predictate (s : seq<'a>) =
+        (s |> Seq.filter predictate) |> Seq.length = 0

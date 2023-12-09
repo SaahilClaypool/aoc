@@ -13,7 +13,7 @@ let parse input =
 
 
 let rec nextValue input =
-    if (Seq.filter (fun x -> x <> 0L) input |> Seq.length) = 0  then
+    if input |> Seq.all (fun x -> x = 0L)  then
         0L
     else
         let differences =
