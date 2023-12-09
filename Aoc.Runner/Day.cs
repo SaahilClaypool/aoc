@@ -67,6 +67,15 @@ namespace Aoc.Runner
             }
             return t;
         }
+
+        public static T Dump<T>(this T t, [CallerArgumentExpression(nameof(t))] string? name = null, bool ignoreTest = false, bool indent = false)
+        {
+            if (IsTest || ignoreTest)
+            {
+                Console.WriteLine($"{name} - {t?.ToJson(indent)}");
+            }
+            return t;
+        }
     }
 
 
