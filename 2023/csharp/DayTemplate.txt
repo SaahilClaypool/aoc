@@ -1,0 +1,30 @@
+namespace Aoc.Solutions.Y2023;
+
+public class Day09 : Day
+{
+    public override string SolveA(string input)
+    {
+        return "A";
+    }
+
+    // find the cycle (need the number of points until cycle starts + length of cycle)
+    // then can count all the places that we will have wins
+    // fold the wins together to find the fist win
+    public override string SolveB(string input)
+    {
+        return "B";
+    }
+
+    public Day09()
+    {
+        Tests = new()
+        {
+
+            new("a", SampleA, "A", SolveA)
+        };
+    }
+
+    static string SampleA = """
+    A
+    """;
+}
