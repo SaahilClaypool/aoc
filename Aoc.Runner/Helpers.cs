@@ -7,6 +7,10 @@ public static class Helpers
 {
     public static IEnumerable<(T, int)> WithIndex<T>(this IEnumerable<T> items) => items.Select((t, i) => (t, i));
 
+
+    public static IEnumerable<K> Choose<T, K>(this IEnumerable<T> values, Func<T, K?> chooser) =>
+        values.Select(chooser).Where(x => x != null).Select(x => x!);
+
     public static IEnumerable<(T A, T B)> Pairs<T>(this IEnumerable<T> items)
     {
         T past = default!;

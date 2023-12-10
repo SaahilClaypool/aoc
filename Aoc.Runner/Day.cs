@@ -7,6 +7,11 @@ namespace Aoc.Runner
 {
     public abstract class Day
     {
+        public void Log(string s)
+        {
+            if (!IsTest) return;
+            Console.WriteLine(s);
+        }
         public bool IsTest { get; set; } = false;
         public virtual List<Test> Tests { get; set; } = new();
         public virtual uint Number()
