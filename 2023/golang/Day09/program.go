@@ -12,14 +12,26 @@ func Parse(input string) [][]int {
 	lines := strings.Split(input, "\n")
 	return lo.Map(lines, func(line string, _ int) []int {
 		words := strings.Split(line, " ")
-		return lo.Map(words, func(word string, _ int) int {
+		return lo.Map(words, IgnoreIndex(IgnoreErr(strconv.Atoi)))
+	})
+}
+
+func ParseImperative(input string) [][]int {
+	lines := strings.Split(input, "\n")
+	result := [][]int{ }
+	for _, line := range lines {
+		words := strings.Split(line, " ")
+		lineWords := []int { }
+		for _, word := range words {
 			i, err := strconv.Atoi(word)
 			if err != nil {
 				panic("bad input")
 			}
-			return i
-		})
-	})
+			lineWords = append(lineWords, i)
+		}
+		result = append(result, lineWords)
+	}
+	return result
 }
 
 func NextValue(input []int) int {
@@ -64,5 +76,15 @@ func Pairwise[V any](collection []V) []lo.Tuple2[V, V] {
 func IgnoreIndex[V, K any](f func(V) K) func(V, int) K {
 	return func(val V, idx int) K {
 		return f(val)
+	}
+}
+
+func IgnoreErr[V, K any](f func(V) (K, error)) func(V) K {
+	return func(val V) K {
+		v, err := f(val)
+		if err != nil {
+			panic(err)
+		}
+		return v;
 	}
 }
