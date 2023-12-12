@@ -27,9 +27,10 @@ let expandGalaxy (factor: int64) (galaxyRows: Set<int64>) (galaxyCols: Set<int64
     let (row, col) = galaxy
     let occupiedRows = galaxyRows |> Seq.filter (fun r -> r < row) |> Seq.length |> int64
     let occupiedCols = galaxyCols |> Seq.filter (fun c -> c < col) |> Seq.length |> int64
+    let emptyRows = row - occupiedRows
+    let emptyCols = col - occupiedCols
+    let expanded = emptyRows * factor + occupiedRows, emptyCols * factor + occupiedCols
 
-
-    let expanded = (row * 2L - occupiedRows, col * 2L - occupiedCols)
     expanded
 
 let allPairCombos a =
@@ -52,26 +53,28 @@ let sample = raw"""
 #...#.....
 """
 
+let solve factor input =
+    let galaxies = parse input
+    let occupiedRows = galaxies |> Seq.map fst |> Set.ofSeq
+    let occupiedCols = galaxies |> Seq.map snd |> Set.ofSeq
+    let expanded = galaxies |> Seq.map (expandGalaxy factor occupiedRows occupiedCols) |> Seq.toList
+    let pairs = expanded |> allPairCombos |> List.ofSeq
+    let totalDistance = 
+        pairs
+        |> Seq.map (fun (left, right) ->
+            let d = distance left right
+            d)
+        |> Seq.sum
+
+    totalDistance |> string
+
 type Day11() =
     inherit Day()
 
-    override _.SolveA input =
-        let galaxies = parse input
-        let occupiedRows = galaxies |> Seq.map fst |> Set.ofSeq
-        let occupiedCols = galaxies |> Seq.map snd |> Set.ofSeq
-        let expanded = galaxies |> Seq.map (expandGalaxy 2L occupiedRows occupiedCols) |> Seq.toList
-        let pairs = expanded |> allPairCombos |> List.ofSeq
-        let totalDistance = 
-            pairs
-            |> Seq.map (fun (left, right) ->
-                let d = distance left right
-                d)
-            |> Seq.sum
+    override _.SolveA input = input |> solve 2L
 
-        totalDistance |> string
-
-    override _.SolveB input =
-        ""
+    override _.SolveB input = input |> solve 1000000L
+        
     override this.Tests =
         [
             Test("a", sample, "374", fun x -> this.SolveA x);
