@@ -43,5 +43,5 @@ module Seq =
         s
         |> Seq.fold (fun state next -> state * next) 1L
     
-    let all predictate (s : seq<'a>) =
-        (s |> Seq.filter predictate) |> Seq.length = 0
+    let all (predictate: 'a -> bool) (s : seq<'a>) =
+        (s |> Seq.filter (predictate >> not)) |> Seq.length = 0
