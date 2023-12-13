@@ -36,15 +36,15 @@ let rec solveLine (line: string) (nums: seq<int * int>) (cache: Dictionary<strin
         else
             let combinations =
                 match line[0] with
-                | '#' -> placeRangeCombinations line nums cache contig
-                | '.' -> skipCombinations line nums cache contig
-                | '?' -> (placeRangeCombinations line nums cache contig) + (skipCombinations line nums cache contig)
+                | '#' -> consumeContigiousFailure line nums cache contig
+                | '.' -> skipNonFailure line nums cache contig
+                | '?' -> (consumeContigiousFailure line nums cache contig) + (skipNonFailure line nums cache contig)
                 | _ -> failwith "bad char"
             cache.Add(cacheKey, combinations)
             cache[cacheKey]
-and skipCombinations line nums cache length =
+and skipNonFailure line nums cache length =
     solveLine line[1..] nums cache
-and placeRangeCombinations (line: string) nums cache length =
+and consumeContigiousFailure (line: string) nums cache length =
     let tooShort = line.Length < length
     let hasWorkingSpring = line[..length - 1].Contains('.')
     let doesNotEnd =
