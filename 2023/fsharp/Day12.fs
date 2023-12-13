@@ -53,9 +53,12 @@ and consumeContigiousFailure (line: string) nums cache length =
     if tooShort || hasWorkingSpring || doesNotEnd then
         0
     else
-        let mutable restLine = line[length..]
-        if restLine.Length > 0 && restLine[0] = '?' then
-            restLine <- $".{restLine[1..]}"
+        let restLine =
+            if line.Length > length then
+                // assume the next MUST be a working spring, or this wouldn't be contig
+                $".{line[length + 1..]}"
+            else line[length..]
+        // continue processing after consuming tail & contig
         solveLine restLine (nums |> Seq.tail) cache
         
 
@@ -75,9 +78,9 @@ type Day12() =
         |> string
     override this.Tests =
         [
-            // Test("a1", ".??..??...?##. 1,1,3", "4", fun x -> this.SolveA x);
-            // Test("a2", "?#?#?#?#?#?#?#? 1,3,1,6", "1", fun x -> this.SolveA x);
-            // Test("a3", "????.######..#####. 1,6,5", "4", fun x -> this.SolveA x);
+            Test("a1", ".??..??...?##. 1,1,3", "4", fun x -> this.SolveA x);
+            Test("a2", "?#?#?#?#?#?#?#? 1,3,1,6", "1", fun x -> this.SolveA x);
+            Test("a3", "????.######..#####. 1,6,5", "4", fun x -> this.SolveA x);
             Test("a4", "?###???????? 3,2,1", "10", fun x -> this.SolveA x);
         ]
         |> List<Test>
