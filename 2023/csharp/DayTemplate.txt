@@ -27,4 +27,4 @@ public class Day09 : Day
     static string SampleA = """
     A
     """;
-}
+Day09}

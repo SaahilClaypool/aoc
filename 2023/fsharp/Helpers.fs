@@ -44,4 +44,7 @@ module Seq =
         |> Seq.fold (fun state next -> state * next) 1L
     
     let all (predictate: 'a -> bool) (s : seq<'a>) =
-        (s |> Seq.filter (predictate >> not)) |> Seq.length = 0
+        (s |> Seq.filter (predictate >> not)) |> Seq.tryHead |> Option.isNone
+
+    let any (predictate: 'a -> bool) (s : seq<'a>) =
+        (s |> Seq.filter predictate) |> Seq.tryHead |> Option.isSome
