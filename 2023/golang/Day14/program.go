@@ -35,24 +35,42 @@ func solveB() int {
 func solveBSample(input string) int {
 
 	platform := parse(input)
-	s := make(map[string]any)
-	for i := 0; i < 1000000000; i++ {
+	s := make(map[string]int)
+	i := 0
+	var remainder int
+	total_passes := 1000000000
+	for ; i < total_passes; i++ {
 		var nl string
 		nl, platform = platform.spin()
 		if _, contains := s[nl]; contains {
+			loop_length := i - s[nl]
+			remaining_passes := (total_passes - i)
+			remainder = remaining_passes % loop_length
 			break
 		}
-		s[nl] = true
+		s[nl] = i
 	}
+	for i = 0; i < remainder - 1; i++ {
+		_, platform = platform.spin()
+	}
+	i = 1
 	return platform.load()
 }
 
 func (p platform) spin() (string, platform) {
 	p = p.tilt(N)
-	nl := p.String()
+	// fmt.Println("N")
+	// fmt.Println(p)
 	p = p.tilt(W)
+	// fmt.Println("W")
+	// fmt.Println(p)
 	p = p.tilt(S)
+	// fmt.Println("S")
+	// fmt.Println(p)
 	p = p.tilt(E)
+	// fmt.Println("E")
+	// fmt.Println(p)
+	nl := p.String()
 	return nl, p
 }
 
@@ -144,9 +162,10 @@ func eastRows(src, dst [][]Space) {
 
 func southRows(src, dst [][]Space) {
 	h := len(src)
+	w := len(src[0])
 	for r, row := range src {
 		for c, v := range row {
-			dst[h-r-1][c] = v
+			dst[w-c-1][h-r-1] = v
 		}
 	}
 }
